@@ -1,0 +1,7 @@
+# requirements.txt
+flask
+torch_vision
+torch
+transformers
+nltk
+pandas
