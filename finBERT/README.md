@@ -1,7 +1,7 @@
 THESE STEPS SHOULD SET UP A "FINBERT SERVER" -- make sure to change the IP address in finbert_sentiment.py to match public IP of EC2
 
 1. Using EC2 instance: g5.xlarge; using AMI Ubuntu Deep Learning Base
-2. ssh into EC@ and create director "mkdir model"
+2. SSH into EC2 and create director "mkdir model"
 3. huggingface-cli login; you will need your hf creds
 4. huggingface-cli download ProsusAI/finbert --local-dir ./model
 5. git clone this repo
