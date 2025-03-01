@@ -1,6 +1,6 @@
 Summary of steps to run
 
-1. Launch EC2 instance g5.8xlarge w/ AMI UBUNTU with Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 22.04)
+1. Launch EC2 instance g5.xlarge w/ AMI UBUNTU with Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 22.04)
 2. chmod 400 [PEM FILE]
 3. ssh -i [PEM FILE] ubuntu@[EC2_HOST]
 4. install conda via directions here: https://medium.com/@mustafa_kamal/a-step-by-step-guide-to-installing-conda-in-ubuntu-and-creating-an-environment-d4e49a73fc46
@@ -18,4 +18,9 @@ $python
     --enable-lora \
     --lora-modules sql-lora=$HOME/.cache/huggingface/hub/models--FinGPT--fingpt-mt_llama3-8b_lora/snapshots/5b5850574ec13e4ce7c102e24f763205992711b7/
 
-12 run the 
+12 run the script 
+python fingpt_sentiment.py \
+--aws_access_key_id "YOUR KEY" \
+--aws_secret_access_key "YOUR KEY" \
+--file_key "amazon_inc/_stock_news.csv" \
+--openai_api_key "EMPTY"
