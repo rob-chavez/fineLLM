@@ -38,7 +38,7 @@ for company in "${companies[@]}"; do
     --aws_secret_access_key "$aws_secret_access_key" \
     --file_key "$file_key" \
     --bucket_name "$bucket_name" \
-    --embedding_app_url "$embedding_url"
+    --embedding_url "$embedding_url"
 
   echo "Processed: $company"
   sleep 2 
