@@ -1,7 +1,6 @@
 import boto3
 import pandas as pd
 import io
-import os
 
 # =============================
 # READ RAW STOCK NEWS DATA FROM S3
@@ -41,24 +40,24 @@ def upload_to_s3(df, s3_client, bucket_name, file_key):
     print(f"Results saved back to S3: s3://{bucket_name}/{output_key}")
 
 #NEED TO UPDATE WITH REAL KEYS
-aws_access_key_id = os.environ["YOUR aws_access_key_id KEY"]
-aws_secret_access_key = os.environ["YOUR aws_secret_access_key KEY"]
+aws_access_key_id = ""
+aws_secret_access_key = ""
 
 # S3 Bucket Name
-bucket_name = os.environ["YOUR BUCKET"]
+bucket_name = ""
 
 #COMPANIES
 companies = [
-    "flex_ltd",
-    "amazon_inc",
+    #"flex_ltd",
+    #"amazon_inc",
     "apple_inc",
-    "broadcom_inc",
-    "docusign_inc",
-    "dynatrace_inc",
-    "manhattan_associates",
-    "microsoft_corporation",
+    #"broadcom_inc",
+    #"docusign_inc",
+    #"dynatrace_inc",
+    #"manhattan_associates",
+    #"microsoft_corporation",
     "nvidia_corporation",
-    "pure_storage_inc",
+    #"pure_storage_inc",
 ]
 
 csv_files = ["_stock_news.csv", "deepseek_sentiments.csv", "finbert_sentiments.csv", "fingpt_sentiments.csv", "embeddings.csv"]
