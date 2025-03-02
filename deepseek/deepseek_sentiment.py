@@ -42,7 +42,7 @@ def setup_openai_client(api_key):
     """Initializes OpenAI client for vLLM API."""
     return OpenAI(
         api_key=api_key,
-        base_url="http://3.95.133.172:8000/v1",  # DeepSeek vLLM API server
+        base_url="http://3.81.200.254:8000/v1",  # DeepSeek vLLM API server
     )
 
 SYS_PROMPT = (
@@ -62,7 +62,7 @@ def get_response(client, headline):
     )
 
     response = client.chat.completions.create(
-        model="Qwen/Qwen2.5-1.5B-Instruct", #"deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+        model="deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
         messages=[
             {"role": "system", "content": SYS_PROMPT},
             {"role": "user", "content": prompt},
@@ -116,7 +116,7 @@ def process_headlines(df, client):
         sentiment = parse_response(response)
         confidence = get_confidence(response)
 
-        deepseek_sentiments.append({"sentiment": sentiment, "confidence": confidence})
+        deepseek_sentiments.append({"deepseek_sentiment": sentiment, "deepseek_confidence": confidence})
 
         if len(deepseek_sentiments) % BATCH_SIZE == 0:
             print(f"Processed {idx + 1} headlines")
