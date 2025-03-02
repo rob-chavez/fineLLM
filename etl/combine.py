@@ -40,7 +40,7 @@ def upload_to_s3(df, s3_client, bucket_name, file_key):
 
     print(f"Results saved back to S3: s3://{bucket_name}/{output_key}")
 
-#KEYS
+#NEED TO UPDATE WITH REAL KEYS
 aws_access_key_id = os.environ["YOUR aws_access_key_id KEY"]
 aws_secret_access_key = os.environ["YOUR aws_secret_access_key KEY"]
 
