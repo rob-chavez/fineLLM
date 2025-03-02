@@ -36,7 +36,7 @@ def read_s3_file(bucket_name, file_key, aws_access_key_id, aws_secret_access_key
 # PREDICT VIA FINBERT FLASK SERVER
 # =============================
 def predict(text):
-    url = "http://100.28.231.40:8000/predict"  #make sure url is correct given spot instance
+    url = "http://35.174.61.199:8000/predict"  #make sure url is correct given spot instance
     response = requests.post(url, json={"text": text})
     if response.status_code == 200:
         return response.json()  
@@ -55,7 +55,7 @@ def process_headlines(df):
     start_time = time.time()
 
     for idx, headline in enumerate(headlines):
-        print(headline, end=" ")
+
         sentiments.append(predict(headline))
         if len(sentiments) % BATCH_SIZE == 0:
             print(f"Processed {idx + 1} headlines")
@@ -66,15 +66,37 @@ def process_headlines(df):
 
     return pd.DataFrame(sentiments)
 
+
+# =============================
+# SAVE RESULTS BACK TO S3
+# =============================
+def upload_to_s3(df, s3_client, bucket_name, file_key):
+    """Uploads a DataFrame as a CSV file back to the same S3 bucket and folder."""
+    
+    # Extract folder path from file_key
+    folder_path = "/".join(file_key.split("/")[:-1])  # Get everything except the last part
+    output_key = f"{folder_path}/finbert_sentiments.csv" if folder_path else "finbert_sentiments.csv"
+
+    # Convert DataFrame to CSV in-memory
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False)
+
+    # Upload to S3
+    s3_client.put_object(Bucket=bucket_name, Key=output_key, Body=csv_buffer.getvalue())
+    print(f"Results saved back to S3: s3://{bucket_name}/{output_key}")
+
+
 # Main execution of the script
 if __name__ == "__main__":
+
     # Parse command-line arguments
     args = parse_arguments()
+    bucket_name="harvard-capstone-bronze-bucket"
 
     # Read stock news data from S3
     print("Reading stock news data from S3...")
-    df, s3_client = read_s3_file(
-        bucket_name="harvard-capstone-bronze-bucket", 
+    df, s3_client = read_s3_file( 
+        bucket_name=bucket_name,
         file_key=args.file_key, 
         aws_access_key_id=args.aws_access_key_id, 
         aws_secret_access_key=args.aws_secret_access_key
@@ -84,6 +106,6 @@ if __name__ == "__main__":
     print("Processing headlines for sentiment analysis...")
     df2 = process_headlines(df)
 
-    # Optionally, save the results to a new CSV
-    df2.to_csv("sentiment_analysis_results.csv", index=False)
-    print("Sentiment analysis results saved to 'sentiment_analysis_results.csv'.")
+    # Upload back to S3
+    upload_to_s3(df2, s3_client, bucket_name, args.file_key)
+
