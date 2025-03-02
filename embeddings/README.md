@@ -15,3 +15,10 @@ Summary of steps to run
 13. cd fineLLM/embeddings
 14. docker build -t e5 .
 15. docker run -p 8000:8000 -t e5
+16. run the script --> alternatively to run all companies, use shell file
+python embed_headlines.py \
+--aws_access_key_id "YOUR KEY" \
+--aws_secret_access_key "YOUR KEY" \
+--file_key "amazon_inc/_stock_news.csv" \
+--bucket_name "bucket_name" \
+--embedding_url "embedding_url"
