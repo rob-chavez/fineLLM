@@ -11,13 +11,13 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Create the model cache directory
-RUN mkdir -p /app/model_cache/models--intfloat--e5-large-v2
+RUN mkdir -p /app/models
 
 # Copy the downloaded model into the container
-COPY ./.cache/huggingface/hub/models--intfloat--e5-large-v2 /app/model_cache/models--intfloat--e5-large-v2
+COPY ./models /app/models
 
 # Set the environment variable to point to the local model cache
-ENV TRANSFORMERS_CACHE=/app/model_cache
+ENV TRANSFORMERS_CACHE=/app/models
 
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
