@@ -1,6 +1,7 @@
 import boto3
 import pandas as pd
 import io
+import os
 
 # =============================
 # READ RAW STOCK NEWS DATA FROM S3
@@ -40,24 +41,24 @@ def upload_to_s3(df, s3_client, bucket_name, file_key):
     print(f"Results saved back to S3: s3://{bucket_name}/{output_key}")
 
 #KEYS
-aws_access_key_id = "AKIAS74TLZKMHDMOGO5S"
-aws_secret_access_key = "nHae3VWlLd5tFNUev38x3TX0hT7SuRGxuBDAr9Uf"
+aws_access_key_id = os.environ["YOUR aws_access_key_id KEY"]
+aws_secret_access_key = os.environ["YOUR aws_secret_access_key KEY"]
 
 # S3 Bucket Name
-bucket_name = "harvard-capstone-bronze-bucket"
+bucket_name = os.environ["YOUR BUCKET"]
 
 #COMPANIES
 companies = [
-    #"flex_ltd",
-    #"amazon_inc",
+    "flex_ltd",
+    "amazon_inc",
     "apple_inc",
-    #"broadcom_inc",
-    #"docusign_inc",
-    #"dynatrace_inc",
-    #"manhattan_associates",
-    #"microsoft_corporation",
+    "broadcom_inc",
+    "docusign_inc",
+    "dynatrace_inc",
+    "manhattan_associates",
+    "microsoft_corporation",
     "nvidia_corporation",
-    #"pure_storage_inc",
+    "pure_storage_inc",
 ]
 
 csv_files = ["_stock_news.csv", "deepseek_sentiments.csv", "finbert_sentiments.csv", "fingpt_sentiments.csv", "embeddings.csv"]
@@ -88,4 +89,4 @@ for company in companies:
             df.rename(columns=dict(zip(df.columns, rename_columns)), inplace=True)
         combined_df = pd.concat([combined_df, df], axis=1)
 
-    #upload_to_s3(combined_df, s3_client, bucket_name, f"{company}/senitments_and_embeddings.csv")
+    upload_to_s3(combined_df, s3_client, bucket_name, f"{company}/senitments_and_embeddings.csv")
