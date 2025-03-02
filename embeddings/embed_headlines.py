@@ -3,7 +3,8 @@ import boto3
 import pandas as pd
 import io
 import requests
-import json
+import time
+
 
 # =============================
 # ARGUMENT PARSER FOR CONFIGURATION
@@ -61,26 +62,44 @@ def main():
     try:
         df, s3_client = read_s3_file(args.bucket_name, args.file_key, args.aws_access_key_id, args.aws_secret_access_key)
 
-        # Send CSV to embedding app
-        csv_buffer = io.StringIO()
-        df.to_csv(csv_buffer, index=False)
-        csv_buffer.seek(0) #reset buffer position
+        batch_size = 1000  # Adjust batch size as needed
+        num_batches = len(df) // batch_size + (1 if len(df) % batch_size else 0)
 
-        files = {'file': ('data.csv', csv_buffer, 'text/csv')}
-        response = requests.post(args.embedding_url, files=files)
+        all_embeddings_dfs = []  # Store embeddings DataFrames
 
-        if response.status_code == 200:
-            embeddings_json = response.json().get('embeddings')
-            if embeddings_json:
-                embeddings_df = pd.read_json(embeddings_json, orient='split')
-                upload_to_s3(embeddings_df, s3_client, args.bucket_name, args.file_key)
+        for i in range(num_batches):
+            start_idx = i * batch_size
+            end_idx = min((i + 1) * batch_size, len(df))
+            batch_df = df.iloc[start_idx:end_idx]
+
+            csv_buffer = io.StringIO()
+            batch_df.to_csv(csv_buffer, index=False)
+            csv_buffer.seek(0)
+
+            files = {'file': ('data.csv', csv_buffer, 'text/csv')}
+            response = requests.post(args.embedding_url, files=files)
+
+            if response.status_code == 200:
+                embeddings_json = response.json().get('embeddings')
+                if embeddings_json:
+                    embeddings_df = pd.read_json(io.StringIO(embeddings_json), orient='split')
+                    all_embeddings_dfs.append(embeddings_df)
+                else:
+                    print(f"Batch {i+1}: Error: Embeddings not found in response.")
             else:
-                print("Error: Embeddings not found in response.")
+                print(f"Batch {i+1}: Error: Failed to get embeddings. Status code: {response.status_code}, Response: {response.text}")
+
+            time.sleep(1) #throttle requests.
+
+        if all_embeddings_dfs:
+            final_embeddings_df = pd.concat(all_embeddings_dfs)
+            upload_to_s3(final_embeddings_df, s3_client, args.bucket_name, args.file_key)
         else:
-            print(f"Error: Failed to get embeddings. Status code: {response.status_code}, Response: {response.text}")
+            print("No embeddings were generated.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     main()
