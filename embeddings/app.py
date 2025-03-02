@@ -11,7 +11,7 @@ import os
 app = Flask(__name__)
 
 # Load the model and tokenizer from the local directory
-model_path = os.environ.get("TRANSFORMERS_CACHE")
+model_path = os.environ.get("HF_HOME")
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModel.from_pretrained(model_path)
 
@@ -56,4 +56,4 @@ def embed():
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0',  port=8000)

@@ -13,4 +13,5 @@ Summary of steps to run
 11. conda deactivate
 12. git clone https://github.com/rob-chavez/fineLLM.git
 13. cd fineLLM/embeddings
-14. docker build --build-arg EC2_HOME=/home/ubuntu -t e5 .
+14. docker build -t e5 .
+15. docker run -p 8000:8000 -t e5
